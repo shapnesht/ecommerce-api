@@ -37,7 +37,6 @@ const getSingleReview = async (req, res) => {
     path: "user",
     select: "name",
   });
-  console.log(review);
   if (!review) {
     throw new CustomError.NotFoundError(`No Review with the id ${reviewId}`);
   }
@@ -52,7 +51,7 @@ const updateReview = async (req, res) => {
       "Please provide title, rating and comment"
     );
   }
-  const review = await Review.find({ _id: reviewId });
+  const review = await Review.findOne({ _id: reviewId });
   if (!review) {
     throw new CustomError.NotFoundError(`No Review with the id ${reviewId}`);
   }
@@ -67,12 +66,12 @@ const updateReview = async (req, res) => {
 
 const deleteReview = async (req, res) => {
   const { id: reviewId } = req.params;
-  const review = await Review.find({ _id: reviewId });
+  const review = await Review.findOne({ _id: reviewId });
   if (!review) {
     throw new CustomError.NotFoundError(`No Review with the id ${reviewId}`);
   }
   checkPermission(req.user, review.user);
-  await Review.deleteOne({ review });
+  await review.remove();
   res.status(StatusCodes.OK).json({ msg: "Successfully deleted the review" });
 };
 
